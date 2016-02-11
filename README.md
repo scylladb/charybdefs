@@ -18,7 +18,7 @@ Using
 
 ```sh
 mkdir /tmp/scylla
-sudo ./charibefs /var/lib/scylla/ -omodules=subdir,subdir=/tmp/scylla
+sudo ./charybdefs /var/lib/scylla/ -omodules=subdir,subdir=/tmp/scylla
 ```
 
 Example tests
