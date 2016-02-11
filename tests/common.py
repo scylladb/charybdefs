@@ -12,8 +12,8 @@ from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
 sys.path.append('gen-py')
-from gen.server import server
-from gen.server.ttypes import *
+from server import server
+from server.ttypes import *
 
 def clear_scylla_dir():
     shutil.rmtree("/var/lib/scylla/commitlog", ignore_errors=True)
