@@ -8,8 +8,10 @@ with a Thrift RPC interface for instrumentation.
 Building
 ========
 
+```sh
 cmake CMakeLists.txt
 make
+```
 
 Using
 =====
