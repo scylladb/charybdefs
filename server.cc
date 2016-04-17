@@ -118,6 +118,10 @@ static bool get_lucky(int probability)
     std::random_device rd;
     std::uniform_int_distribution<int> dist(1, 100000);
 
+    if (!probability) {
+        return false;
+    }
+
     if (dist(rd) > probability) {
         return true;
     }
