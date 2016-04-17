@@ -1,0 +1,7 @@
+#!/bin/bash
+
+if [ ! -d gen-py ]; then
+    thrift -r --gen py ../server.thrift
+fi
+
+python recipes.py $1
