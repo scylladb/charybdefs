@@ -151,7 +151,6 @@ int error_inject(volatile int in_flight, std::string path, std::string method)
         err_no = random_err_no();
     }
 
-    std::cout << "error_inject " << descr.regexp << std::endl;
     if (descr.regexp.size()) {
         std::regex r(descr.regexp);
         if (!std::regex_match(path, r)) {
