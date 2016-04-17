@@ -17,8 +17,8 @@ Using
 =====
 
 ```sh
-mkdir /tmp/scylla
-sudo ./charybdefs /var/lib/scylla/ -omodules=subdir,subdir=/tmp/scylla
+mkdir /root/scylla
+sudo ./charybdefs /var/lib/scylla/ -omodules=subdir,subdir=/root/scylla
 ```
 
 Example tests
