@@ -1,12 +1,30 @@
 service server {
 
+    // Used to get the list of availables systems calls
     list<string> get_methods(), 
 
+    // Used to clear all faults sources
     void clear_all_faults(),
 
+    // Used to clear a specific method fault
     void clear_fault(string method),
 
-    void set_fault(list<string> methods, bool random, i32 err_no, i32 probability, string regexp, bool kill_caller, i32 delay_us, bool auto_delay),
+    // Set fault on a specific list of methods
+    void set_fault(list<string> methods,    // the list of methods to operate on
+                   bool random,             // Must we return random errno
+                   i32 err_no,              // A specific errno to return
+                   i32 probability,         // Fault probability over 100 000
+                   string regexp,           // A regexp matching a victim file
+                   bool kill_caller,        // Kill -9 the caller process
+                   i32 delay_us,            // Delay to inject in the fs calls
+                   bool auto_delay),        // Not implemented yet: Will be used to simulate SSDs latencies
 
-    void set_all_fault(bool random, i32 err_no, i32 probability, string regexp, bool kill_caller, i32 delay_us, bool auto_delay),
+    // Works like set_fault but applies the fault to all methods
+    void set_all_fault(bool random,
+                       i32 err_no,
+                       i32 probability,
+                       string regexp,
+                       bool kill_caller,
+                       i32 delay_us,
+                       bool auto_delay),
 }
