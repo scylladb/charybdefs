@@ -9,6 +9,8 @@ Building
 ========
 
 ```sh
+yum install gcc-c++ cmake cmake thrift libfuse-devel python-thrift thrift-devel
+thrift -r --gen cpp server.thrift
 cmake CMakeLists.txt
 make
 ```
@@ -17,6 +19,7 @@ Using
 =====
 
 ```sh
+modprobe fuse
 mkdir /root/scylla
 sudo ./charybdefs /var/lib/scylla/ -omodules=subdir,subdir=/root/scylla
 ```
