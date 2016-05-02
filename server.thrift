@@ -1,3 +1,9 @@
+// These are the method of the CharybdeFS thrift client object
+//
+// For more info on how to use thrift with python
+// look at: https://thrift.apache.org/tutorial/py
+//
+
 service server {
 
     // Used to get the list of availables systems calls
