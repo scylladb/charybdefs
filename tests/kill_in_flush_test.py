@@ -25,7 +25,7 @@ def stress():
 def is_running(name):
     try:
         check_output(["pidof", name]) == 0
-    except subprocess.CalledProcessError, e:
+    except subprocess.CalledProcessError:
         return False
     return True
 
@@ -39,23 +39,23 @@ def loop():
     time.sleep(5)
 
     # start the stress and wait
-    print "starting cassandra stress"
+    print("starting cassandra stress")
     stress_proc = stress()
     # setup a random time to hit every write path at random
     # commitlog / compaction / SSTable creation ...
     time.sleep(random.randint(15, 50))
 
     # trigger kill on flush/sync and wait it work
-    print "setting flush/sync to kill scylla"
+    print("setting flush/sync to kill scylla")
     client.set_fault(['flush', 'fsync', 'fsyncdir'], False, 0, 100000, "", True, 0, False)
-    print "Waiting for scylla do die"
+    print("Waiting for scylla do die")
     while is_running("scylla"):
         time.sleep(1)
-    print "Scylla died"
-    print "clearing flush/sync kill"
+    print("Scylla died")
+    print("clearing flush/sync kill")
     client.clear_all_faults()
 
-    print "stopping cassandra stress"
+    print("stopping cassandra stress")
     os.killpg(os.getpgid(stress_proc.pid), signal.SIGTERM)
     stress_proc.wait()
 
@@ -64,17 +64,17 @@ def loop():
     time.sleep(60)
 
     if not is_running("scylla"):
-        print "Scylla failed to boot after fsync kill. Something bad happened."
+        print("Scylla failed to boot after fsync kill. Something bad happened.")
         sys.exit(1)
 
     stop_scylla(scylla_proc, scylla_log)
 
     if not has_message("fsync-recover", b'Starting listening for CQL clients'):
-        print "Scylla did not boot completely after fsync kill. Something bad happened"
+        print("Scylla did not boot completely after fsync kill. Something bad happened")
         sys.exit(2)
 
-    print "Success"
-    print ""
+    print("Success")
+    print("")
 
 
 def main():

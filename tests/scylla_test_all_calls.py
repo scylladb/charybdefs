@@ -24,7 +24,7 @@ lock = threading.Lock()
 
 
 def mkdata(gen):
-    res = "".join([str(x) for x in (gen + x for x in xrange(1000))])
+    res = "".join([str(x) for x in (gen + x for x in range(1000))])
     gen += 1000
     return res, gen
 
@@ -50,8 +50,8 @@ def writer():
         try:
             query = "INSERT INTO sha.test (data) VALUES('%s');" % (data)
             session.execute(query)
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(str(e))
             keep_going = False
             continue
         counter += 1
@@ -74,15 +74,15 @@ def read_check(count):
         data, gen = mkdata(gen)
 
         try:
-            query = "SELECT data FROM sha.test WHERE data='%s';" % (data)
+            query = "SELECT data FROM sha.test WHERE data='%s';" % data
             rows = session.execute(query)
             count = 0
             for row in rows:
                 count += 1
             if count != 1:
                 return False
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(str(e))
             keep_going = False
             continue
 
@@ -112,7 +112,7 @@ def stop_writing(t):
 
 
 def test_method(method, client):
-    print "Testing " + method
+    print("Testing %s" % method)
     clear_scylla_dir()
     scylla_proc, scylla_log = start_scylla(method, True)
 
@@ -126,7 +126,7 @@ def test_method(method, client):
 
     if has_message(method, b'ERROR') and\
        not has_message(method, b'Shutdown communications until operator examinate the situation.'):
-        print "Error handling method=%s", method
+        print("Error handling method=%s" % method)
         sys.exit(1)
 
     time.sleep(30)
@@ -138,11 +138,11 @@ def test_method(method, client):
     scylla_proc, scylla_log = start_scylla(method, False)
     try:
         result = read_check(count)
-    except Exception, e:
-        print "Read check error for method=%s: %s" % (method, str(e))
+    except Exception as e:
+        print("Read check error for method=%s: %s" % (method, str(e)))
         sys.exit(2)
     if not result:
-        print "Error in " + method
+        print("Error in %s" % method)
         sys.exit(3)
     stop_scylla(scylla_proc, scylla_log)
 

@@ -22,7 +22,7 @@ def stress():
 
 
 def cleanup(scylla_proc, scylla_log, stress_proc):
-    print "stopping cassandra stress"
+    print("stopping cassandra stress")
     os.killpg(os.getpgid(stress_proc.pid), signal.SIGTERM)
     stress_proc.wait()
 
@@ -35,14 +35,14 @@ def main():
 
     scylla_proc, scylla_log = start_scylla("out-of-disk-space", True)
 
-    print "starting cassandra stress"
+    print("starting cassandra stress")
     stress_proc = stress()
     # Sufficient time for activity such as memtable write, compaction, etc.
     time.sleep(random.randint(20, 50))
 
     methods = client.get_methods()
     ENOSPC = 28  # no space left on device error
-    print "creating out of disk space scenario"
+    print("creating out of disk space scenario")
     client.set_fault(methods, False, ENOSPC, 100000, "", False, 0, False)
 
     # Leave system with no space left for a few seconds.
@@ -50,13 +50,13 @@ def main():
 
     # Check that the system faced the  scenario
     if not has_message("out-of-disk-space", b'No space left on device'):
-        print "Failed to make system run out of disk space"
+        print("Failed to make system run out of disk space")
         cleanup(scylla_proc, scylla_log, stress_proc)
         sys.exit(1)
-    print "System is out of disk space as expected"
+    print("System is out of disk space as expected")
 
     # Clean faults and let the system recover from the out of disk space scenario.
-    print "destroying out of disk space scenario"
+    print("destroying out of disk space scenario")
     client.clear_all_faults()
     scylla_log.seek(0)
     scylla_log.truncate()
@@ -64,15 +64,15 @@ def main():
 
     # Checking that the system was actually able to recover
     if has_message("out-of-disk-space", b'No space left on device'):
-        print "Failed to make system recover from out of disk space scenario"
+        print("Failed to make system recover from out of disk space scenario")
         cleanup(scylla_proc, scylla_log, stress_proc)
         sys.exit(1)
-    print "System is no longer out of disk space as expected"
+    print("System is no longer out of disk space as expected")
 
     cleanup(scylla_proc, scylla_log, stress_proc)
 
-    print "Success"
-    print ""
+    print("Success")
+    print("")
 
 if __name__ == "__main__":
     main()
