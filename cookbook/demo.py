@@ -43,7 +43,8 @@ class CookbookUnitTests(unittest.TestCase):
     def victim(self):
         return os.path.join(self._mount_point, "blub")
 
-    def run_recipe(self, name):
+    @staticmethod
+    def run_recipe(name):
         subprocess.call(["./recipes", "--clear"])
         subprocess.call(["./recipes", "--%s" % name])
         time.sleep(0.5)
