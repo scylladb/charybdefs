@@ -1,4 +1,4 @@
-import sys, glob
+import sys
 sys.path.append('gen-py')
 
 from gen.server import server
@@ -17,11 +17,11 @@ try:
     client = server.Client(protocol)
     transport.open()
 
-    print client.get_methods()
+    print(client.get_methods())
 
-    #client.set_fault(['flush', 'fsync', 'fsyncdir'], False, 0, 100000, "", True, 500000)
+    # client.set_fault(['flush', 'fsync', 'fsyncdir'], False, 0, 100000, "", True, 500000)
     client.set_fault(['flush', 'fsync', 'fsyncdir'], False, 0, 99000, "", True, 500000)
-    #client.clear_all_faults()
+    # client.clear_all_faults()
 
 except Thrift.TException as tx:
-  print(('%s' % (tx.message)))
+    print('%s' % tx.message)

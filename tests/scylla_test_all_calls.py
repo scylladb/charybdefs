@@ -2,14 +2,12 @@ import sys
 sys.path.append('gen-py')
 
 import random
-import time
 import threading
-import uuid
 
-from gen.server import server
 from gen.server.ttypes import *
 
 from common import *
+
 
 def create_database(session):
     session.execute("""CREATE KEYSPACE sha WITH
@@ -17,17 +15,19 @@ def create_database(session):
 
     session.execute("""CREATE TABLE sha.test (
                        data ascii PRIMARY KEY,
-                    );""") 
+                    );""")
     session.execute("""Use sha""")
 
 counter = 0
 keep_going = False
 lock = threading.Lock()
 
+
 def mkdata(gen):
-    res = "".join([str(x) for x in (gen + x for x in xrange(1000))])
+    res = "".join([str(x) for x in (gen + x for x in range(1000))])
     gen += 1000
     return res, gen
+
 
 def writer():
     """thread writer function"""
@@ -35,23 +35,23 @@ def writer():
     cluster = Cluster()
     session = cluster.connect()
 
-    create_database(session);
+    create_database(session)
 
     global keep_going
     global counter
     global lock
     counter = 0
-    gen = 0;
+    gen = 0
     keep_going = True
-    random.seed(0);
+    random.seed(0)
     lock.acquire()
     while keep_going:
         data, gen = mkdata(gen)
         try:
             query = "INSERT INTO sha.test (data) VALUES('%s');" % (data)
             session.execute(query)
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(str(e))
             keep_going = False
             continue
         counter += 1
@@ -60,6 +60,7 @@ def writer():
         lock.acquire()
     lock.release()
 
+
 def read_check(count):
     from cassandra.cluster import Cluster
     cluster = Cluster()
@@ -67,21 +68,21 @@ def read_check(count):
 
     gen = 0
     counter = 0
-    random.seed(0);
+    random.seed(0)
 
     while counter <= count:
         data, gen = mkdata(gen)
 
         try:
-            query = "SELECT data FROM sha.test WHERE data='%s';" % (data)
+            query = "SELECT data FROM sha.test WHERE data='%s';" % data
             rows = session.execute(query)
             count = 0
             for row in rows:
-                count +=1
+                count += 1
             if count != 1:
                 return False
-        except Exception, e:
-            print e
+        except Exception as e:
+            print(str(e))
             keep_going = False
             continue
 
@@ -89,10 +90,12 @@ def read_check(count):
 
     return True
 
+
 def start_writing():
     t = threading.Thread(target=writer)
     t.start()
     return t
+
 
 def stop_writing(t):
     global keep_going
@@ -107,8 +110,9 @@ def stop_writing(t):
 
     return res
 
+
 def test_method(method, client):
-    print "Testing " + method
+    print("Testing %s" % method)
     clear_scylla_dir()
     scylla_proc, scylla_log = start_scylla(method, True)
 
@@ -122,8 +126,8 @@ def test_method(method, client):
 
     if has_message(method, b'ERROR') and\
        not has_message(method, b'Shutdown communications until operator examinate the situation.'):
-            print "Error handling method=%s", method
-            sys.exit(1)
+        print("Error handling method=%s" % method)
+        sys.exit(1)
 
     time.sleep(30)
 
@@ -134,13 +138,14 @@ def test_method(method, client):
     scylla_proc, scylla_log = start_scylla(method, False)
     try:
         result = read_check(count)
-    except Exception, e:
-        print "Read check error for method=%s: %s" % (method, str(e))
+    except Exception as e:
+        print("Read check error for method=%s: %s" % (method, str(e)))
         sys.exit(2)
     if not result:
-        print "Error in " + method
+        print("Error in %s" % method)
         sys.exit(3)
     stop_scylla(scylla_proc, scylla_log)
+
 
 def main():
     client = connect()

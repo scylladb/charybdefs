@@ -1,4 +1,3 @@
-import sys, glob
 import errno
 
 import sys
@@ -7,10 +6,10 @@ sys.path.append('gen-py')
 from server import server
 from server.ttypes import *
 
-from thrift import Thrift
 from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
+
 
 def usage():
     print("Choose one of the following option:\n"
@@ -26,6 +25,7 @@ def usage():
           " --broken-drive")
     sys.exit(1)
 
+
 def connect():
     transport = TSocket.TSocket('127.0.0.1', 9090)
     transport = TTransport.TBufferedTransport(transport)
@@ -33,6 +33,7 @@ def connect():
     client = server.Client(protocol)
     transport.open()
     return client
+
 
 def main():
     if len(sys.argv) != 2:
@@ -55,19 +56,19 @@ def main():
         print("Simulating quota exceeded")
         client.set_all_fault(False, errno.EDQUOT, 0, "", False, 0, False)
     elif sys.argv[1] == "--delay":
-        print("Simulating delayed IO");
+        print("Simulating delayed IO")
         client.set_all_fault(False, 0, 0, "", False, 50000, False)
     elif sys.argv[1] == "--random":
         print("Simulating random errno")
         client.set_all_fault(True, 0, 0, "", False, 0, False)
     elif sys.argv[1] == "--specific-syscalls":
-        print("Restricting random IO restricted to specific syscalls");
+        print("Restricting random IO restricted to specific syscalls")
         client.set_fault(['read', 'read_buf', 'write', 'write_buf'], True, 0, 0, "", False, 0, False)
     elif sys.argv[1] == "--probability":
-        print("Restricting random IO restricted to specific syscalls and 1% error probability");
+        print("Restricting random IO restricted to specific syscalls and 1% error probability")
         client.set_fault(['read', 'read_buf', 'write', 'write_buf'], True, 0, 1000, "", False, 0, False)
     elif sys.argv[1] == "--file-pattern":
-        print("Restricting random IO restricted to specific syscalls while cursing *.sendmail.cf");
+        print("Restricting random IO restricted to specific syscalls while cursing *.sendmail.cf")
         client.set_fault(['read', 'read_buf', 'write', 'write_buf'], True, 0, 0, ".*sendmail.cf", False, 0, False)
     elif sys.argv[1] == "--broken-drive":
         print("The agonising drive simulator")
@@ -78,4 +79,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
