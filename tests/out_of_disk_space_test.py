@@ -22,7 +22,7 @@ def stress():
 
 
 def cleanup(scylla_proc, scylla_log, stress_proc):
-    print("stopping cassandra stress")
+    print("Stopping cassandra stress")
     os.killpg(os.getpgid(stress_proc.pid), signal.SIGTERM)
     stress_proc.wait()
 
@@ -35,14 +35,14 @@ def main():
 
     scylla_proc, scylla_log = start_scylla("out-of-disk-space", True)
 
-    print("starting cassandra stress")
+    print("Starting cassandra stress")
     stress_proc = stress()
     # Sufficient time for activity such as memtable write, compaction, etc.
     time.sleep(random.randint(20, 50))
 
     methods = client.get_methods()
     ENOSPC = 28  # no space left on device error
-    print("creating out of disk space scenario")
+    print("Creating out of disk space scenario")
     client.set_fault(methods, False, ENOSPC, 100000, "", False, 0, False)
 
     # Leave system with no space left for a few seconds.
@@ -56,7 +56,7 @@ def main():
     print("System is out of disk space as expected")
 
     # Clean faults and let the system recover from the out of disk space scenario.
-    print("destroying out of disk space scenario")
+    print("Destroying out of disk space scenario")
     client.clear_all_faults()
     scylla_log.seek(0)
     scylla_log.truncate()

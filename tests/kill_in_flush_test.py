@@ -39,23 +39,23 @@ def loop():
     time.sleep(5)
 
     # start the stress and wait
-    print("starting cassandra stress")
+    print("Starting cassandra stress")
     stress_proc = stress()
     # setup a random time to hit every write path at random
     # commitlog / compaction / SSTable creation ...
     time.sleep(random.randint(15, 50))
 
     # trigger kill on flush/sync and wait it work
-    print("setting flush/sync to kill scylla")
+    print("Setting flush/sync to kill scylla")
     client.set_fault(['flush', 'fsync', 'fsyncdir'], False, 0, 100000, "", True, 0, False)
     print("Waiting for scylla do die")
     while is_running("scylla"):
         time.sleep(1)
     print("Scylla died")
-    print("clearing flush/sync kill")
+    print("Clearing flush/sync kill")
     client.clear_all_faults()
 
-    print("stopping cassandra stress")
+    print("Stopping cassandra stress")
     os.killpg(os.getpgid(stress_proc.pid), signal.SIGTERM)
     stress_proc.wait()
 
