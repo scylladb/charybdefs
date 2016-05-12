@@ -43,7 +43,7 @@ class CookbookUnitTests(unittest.TestCase):
     def victim(self):
         return os.path.join(self._mount_point, "blub")
 
-    def test(self, name):
+    def run_recipe(self, name):
         subprocess.call(["./recipes", "--clear"])
         subprocess.call(["./recipes", "--%s" % name])
         time.sleep(0.5)
@@ -57,34 +57,34 @@ class CookbookUnitTests(unittest.TestCase):
         self._log.warning("\n")
 
     def test_disk_full(self):
-        self.test("full")
+        self.run_recipe("full")
         subprocess.call(["dd", "if=/dev/zero",
                          "of=%s" % self.victim()])
 
     def test_io_error(self):
-        self.test("io-error")
+        self.run_recipe("io-error")
         subprocess.call(["dd", "if=/dev/zero",
                          "of=%s" % self.victim()])
 
     def test_quota(self):
-        self.test("quota")
+        self.run_recipe("quota")
         subprocess.call(["dd", "if=/dev/zero",
                          "of=%s" % self.victim()])
 
     def test_delay(self):
-        self.test("delay")
+        self.run_recipe("delay")
         subprocess.call(["dd", "if=/dev/zero",
                          "of=%s" % self.victim(),
                          "bs=4k", "count=100"])
 
     def test_random(self):
-        self.test("random")
+        self.run_recipe("random")
         subprocess.call(["dd", "if=/dev/zero",
                           "of=%s" % self.victim(),
                           "bs=4k", "count=1000"])
 
     def test_specific_syscalls(self):
-        self.test("specific-syscalls")
+        self.run_recipe("specific-syscalls")
         
         self._log.warning("Doing ls")
         subprocess.call(["ls", self._mount_point])
@@ -99,14 +99,14 @@ class CookbookUnitTests(unittest.TestCase):
                          "of=/dev/null", "bs=4k", "count=1000"])
 
     def test_probability(self):
-        self.test("probability")
+        self.run_recipe("probability")
 
         subprocess.call(["dd", "if=/dev/zero",
                          "of=%s" % self.victim(),
                          "bs=4k", "count=1000"])
 
     def test_file_pattern(self):
-        self.test("file-pattern")
+        self.run_recipe("file-pattern")
 
         self._log.warning("Writing postfix main.cf: good")
         subprocess.call(["dd", "if=/dev/zero",
@@ -119,7 +119,7 @@ class CookbookUnitTests(unittest.TestCase):
                          "bs=4k", "count=1000"])
 
     def test_broken_drive(self):
-        self.test("broken-drive")
+        self.run_recipe("broken-drive")
 
         subprocess.call(["dd", "if=/dev/zero",
                          "of=%s" % self.victim(),
