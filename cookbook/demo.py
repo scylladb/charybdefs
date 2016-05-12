@@ -2,7 +2,6 @@ import logging
 import os
 import shutil
 import subprocess
-import tempfile
 import time
 import unittest
 
@@ -22,7 +21,7 @@ class CookbookUnitTests(unittest.TestCase):
         self._log = logging.getLogger("demo")
 
         self._log.warning("Setting up demo")
-        
+
         self.build_charybdefs()
 
         self._log.warning("Setting up mount points and target directory")
@@ -39,7 +38,7 @@ class CookbookUnitTests(unittest.TestCase):
         subprocess.call(["pkill", "-9", "charybdefs"])
         # Spawning charybdeFS
         subprocess.call(["../charybdefs", self._mount_point, "-omodules=subdir,subdir=%s" % self._data_dir])
-        
+
     def victim(self):
         return os.path.join(self._mount_point, "blub")
 
@@ -81,12 +80,12 @@ class CookbookUnitTests(unittest.TestCase):
     def test_random(self):
         self.run_recipe("random")
         subprocess.call(["dd", "if=/dev/zero",
-                          "of=%s" % self.victim(),
-                          "bs=4k", "count=1000"])
+                         "of=%s" % self.victim(),
+                         "bs=4k", "count=1000"])
 
     def test_specific_syscalls(self):
         self.run_recipe("specific-syscalls")
-        
+
         self._log.warning("Doing ls")
         subprocess.call(["ls", self._mount_point])
 

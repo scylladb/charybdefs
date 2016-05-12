@@ -1,19 +1,8 @@
-import sys, glob
-
 from subprocess import check_output
-import subprocess
-import signal
 import random
-import time
-import sys
-import os
-
-from thrift import Thrift
-from thrift.transport import TSocket
-from thrift.transport import TTransport
-from thrift.protocol import TBinaryProtocol
 
 from common import *
+
 
 def stress():
     FNULL = open(os.devnull, 'w')
@@ -27,24 +16,26 @@ def stress():
                              'threads=700',
                              '-node',
                              'localhost'],
-                             preexec_fn=os.setsid,
-                             stdout=FNULL,
-                             stderr=subprocess.STDOUT)
+                            preexec_fn=os.setsid,
+                            stdout=FNULL,
+                            stderr=subprocess.STDOUT)
     return proc
+
 
 def is_running(name):
     try:
-        check_output(["pidof",name]) == 0
+        check_output(["pidof", name]) == 0
     except subprocess.CalledProcessError, e:
         return False
     return True
+
 
 def loop():
     client = connect()
     client.clear_all_faults()
 
     clear_scylla_dir()
-    scylla_proc, scylla_log = start_scylla("fsync", True)    
+    scylla_proc, scylla_log = start_scylla("fsync", True)
     time.sleep(5)
 
     # start the stress and wait
@@ -84,6 +75,7 @@ def loop():
 
     print "Success"
     print ""
+
 
 def main():
     while True:

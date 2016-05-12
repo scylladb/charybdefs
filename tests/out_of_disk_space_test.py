@@ -1,19 +1,7 @@
-import sys, glob
-
-from subprocess import check_output
-import subprocess
-import signal
 import random
-import time
-import sys
-import os
-
-from thrift import Thrift
-from thrift.transport import TSocket
-from thrift.transport import TTransport
-from thrift.protocol import TBinaryProtocol
 
 from common import *
+
 
 def stress():
     FNULL = open(os.devnull, 'w')
@@ -27,10 +15,11 @@ def stress():
                              'threads=700',
                              '-node',
                              'localhost'],
-                             preexec_fn=os.setsid,
-                             stdout=FNULL,
-                             stderr=subprocess.STDOUT)
+                            preexec_fn=os.setsid,
+                            stdout=FNULL,
+                            stderr=subprocess.STDOUT)
     return proc
+
 
 def cleanup(scylla_proc, scylla_log, stress_proc):
     print "stopping cassandra stress"
@@ -38,6 +27,7 @@ def cleanup(scylla_proc, scylla_log, stress_proc):
     stress_proc.wait()
 
     stop_scylla(scylla_proc, scylla_log)
+
 
 def main():
     client = connect()
@@ -51,7 +41,7 @@ def main():
     time.sleep(random.randint(20, 50))
 
     methods = client.get_methods()
-    ENOSPC = 28 # no space left on device error
+    ENOSPC = 28  # no space left on device error
     print "creating out of disk space scenario"
     client.set_fault(methods, False, ENOSPC, 100000, "", False, 0, False)
 
