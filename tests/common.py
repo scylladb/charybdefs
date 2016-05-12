@@ -30,7 +30,7 @@ def build_log_filename(method, write):
 def start_scylla(method, write):
     print("Starting scylla")
     log = open(build_log_filename(method, write), 'w')
-    proc = subprocess.Popen(['./build/release/scylla',
+    proc = subprocess.Popen(['/usr/bin/scylla',
                              '-m', '512M',
                              '--developer-mode=1'],
                             preexec_fn=os.setsid,

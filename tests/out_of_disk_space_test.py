@@ -5,7 +5,7 @@ from common import *
 
 def stress():
     FNULL = open(os.devnull, 'w')
-    proc = subprocess.Popen(['../scylla-tools-java/tools/bin/cassandra-stress',
+    proc = subprocess.Popen(['/usr/bin/cassandra-stress',
                              'write',
                              'duration=15m',
                              '-mode',
