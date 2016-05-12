@@ -48,7 +48,7 @@ def loop():
     # trigger kill on flush/sync and wait it work
     print("Setting flush/sync to kill scylla")
     client.set_fault(['flush', 'fsync', 'fsyncdir'], False, 0, 100000, "", True, 0, False)
-    print("Waiting for scylla do die")
+    print("Waiting for scylla to die")
     while is_running("scylla"):
         time.sleep(1)
     print("Scylla died")
