@@ -33,7 +33,7 @@ def start_scylla(method, write):
     print("Starting scylla")
     log = open(build_log_filename(method, write), 'w')
     proc = subprocess.Popen(['/usr/bin/scylla',
-                             '-m', '512M',
+                             '--options-file', '/etc/scylla/scylla.yaml',
                              '--developer-mode=1'],
                             preexec_fn=os.setsid,
                             stdout=log, stderr=log)
