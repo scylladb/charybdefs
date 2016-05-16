@@ -1,11 +1,11 @@
-import sys
-sys.path.append('gen-py')
-
 import random
 import threading
-
-from gen.server.ttypes import *
-
+import sys
+import os
+basedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+gen_py_dir = os.path.join(basedir, 'cookbook', 'gen-py')
+sys.path.append(gen_py_dir)
+from server.ttypes import *
 from common import *
 
 
