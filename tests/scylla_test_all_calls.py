@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import random
 import threading
 import sys

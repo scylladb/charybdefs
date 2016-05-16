@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import random
 
 from common import *
