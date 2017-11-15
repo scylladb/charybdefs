@@ -673,7 +673,7 @@ int charybde_create(const char *path, mode_t mode,
         return ret;
     }
 
-    ret = creat(path, mode);
+    ret = open(path, fi->flags, mode);
     if (ret < 0) {
         in_flight--;
         return -errno;
