@@ -49,6 +49,7 @@ struct fault_descriptor {
     bool kill_caller;   // Must we kill the caller
     int32_t delay_us;       // operation delay in us
     bool auto_delay;    // must auto delay like an SSD
+    bool silent_data_corruption;
 };
 
 std::set<std::string> valid_methods;
@@ -130,7 +131,7 @@ static bool get_lucky(int probability)
 }
 
 // return an err_no if we must proceed to error injection
-int error_inject(volatile int in_flight, std::string path, std::string method)
+int error_inject(volatile int in_flight, std::string path, std::string method, void* buffer, size_t buffer_len)
 {
     std::lock_guard<std::mutex> lk(mutex);
 
@@ -184,6 +185,15 @@ int error_inject(volatile int in_flight, std::string path, std::string method)
         return 0;
     }
 
+    if (descr.silent_data_corruption && buffer) {
+        std::random_device rd;
+        std::uniform_int_distribution<int> dist(0, buffer_len-1);
+        auto off = dist(rd);
+        auto len = buffer_len - off;
+        std::memset(static_cast<char*>(buffer) + off, 0, len);
+        std::cout << "Corrupted " << len << " bytes at offset " << off << " of " << path << std::endl;
+    }
+
     return -err_no;
 }
 
@@ -210,7 +220,7 @@ class server_handler: public serverIf {
     void set_fault(const std::vector<std::string>& methods, const bool random,
                    const int32_t err_no, const int32_t probability,
                    const std::string& regexp, const bool kill_caller,
-                   int32_t delay_us, const bool auto_delay)
+                   int32_t delay_us, const bool auto_delay, const bool silent_data_corruption)
     {
         struct fault_descriptor descr;
 
@@ -221,6 +231,7 @@ class server_handler: public serverIf {
         descr.kill_caller = kill_caller;
         descr.delay_us = delay_us;
         descr.auto_delay = auto_delay;
+        descr.silent_data_corruption = silent_data_corruption;
 
         std::lock_guard<std::mutex> lk(mutex);
         for (auto method: methods) {
@@ -233,7 +244,7 @@ class server_handler: public serverIf {
     void set_all_fault(const bool random, const int32_t err_no,
                        const int32_t probability, const std::string& regexp,
                        const bool kill_caller, const int32_t delay_us,
-                       const bool auto_delay)
+                       const bool auto_delay, const bool silent_data_corruption)
     {
         std::vector<std::string> methods;
 
@@ -243,7 +254,7 @@ class server_handler: public serverIf {
         
         set_fault(methods, random, err_no, probability,
                   regexp, kill_caller, delay_us,
-                  auto_delay);
+                  auto_delay, silent_data_corruption);
     }
 
 };

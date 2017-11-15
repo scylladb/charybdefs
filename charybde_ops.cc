@@ -337,7 +337,7 @@ int charybde_write(const char *path, const char *buf, size_t size, off_t offset,
 {
     static volatile int in_flight = 0;
     in_flight++;
-    int ret = error_inject(in_flight, path, "write");
+    int ret = error_inject(in_flight, path, "write", const_cast<char*>(buf), size);
     if (ret) {
         in_flight--;
         return ret;
@@ -819,7 +819,8 @@ int charybde_write_buf(const char *path, struct fuse_bufvec *buf, off_t off,
 {
     static volatile int in_flight = 0;
     in_flight++;
-    int ret = error_inject(in_flight, path, "write_buf");
+
+    int ret = error_inject(in_flight, path, "write_buf", buf->buf[0].mem, buf->buf[0].size);
     if (ret) {
         in_flight--;
         return ret;

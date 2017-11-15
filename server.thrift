@@ -23,7 +23,8 @@ service server {
                    string regexp,           // A regexp matching a victim file
                    bool kill_caller,        // Kill -9 the caller process
                    i32 delay_us,            // Delay to inject in the fs calls
-                   bool auto_delay),        // Not implemented yet: Will be used to simulate SSDs latencies
+                   bool auto_delay,        // Not implemented yet: Will be used to simulate SSDs latencies
+                   bool silent_data_corruption), // Probability-based silent data corruption
 
     // Works like set_fault but applies the fault to all methods
     void set_all_fault(bool random,
@@ -32,5 +33,6 @@ service server {
                        string regexp,
                        bool kill_caller,
                        i32 delay_us,
-                       bool auto_delay),
+                       bool auto_delay,
+                       bool silent_data_corruption),
 }
