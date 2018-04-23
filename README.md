@@ -7,10 +7,19 @@ with a Thrift RPC interface for instrumentation.
 
 Building
 ========
+**CentOS 7.4**
 
 ```sh
-yum install gcc-c++ cmake cmake thrift libfuse-devel python-thrift thrift-devel
-thrift -r --gen cpp server.thrift
+sudo yum install gcc-c++ cmake fuse fuse-devel thrift python-thrift thrift-devel
+thrift -r --gen cpp --gen py server.thriftz
+cmake CMakeLists.txt
+make
+```
+**Ubuntu 16.04**
+
+```sh
+sudo apt-get install g++ cmake fuse libfuse-dev libthrift-dev python-thrift
+thrift -r --gen cpp --gen py server.thrift
 cmake CMakeLists.txt
 make
 ```
