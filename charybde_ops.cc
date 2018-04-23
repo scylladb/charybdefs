@@ -726,8 +726,8 @@ int charybde_fgetattr(const char *path, struct stat *buf, struct fuse_file_info 
     return 0;    
 }
 
-int charybde_lock(const char *path, struct fuse_file_info *, int cmd,
-                 struct flock *)
+int charybde_lock(const char *path, struct fuse_file_info *fi, int cmd,
+                 struct flock *fl)
 {
     static volatile int in_flight = 0;
     in_flight++;
@@ -737,10 +737,14 @@ int charybde_lock(const char *path, struct fuse_file_info *, int cmd,
         return ret;
     }
 
-    std::cout << "charybde_lock: unimplemented." << std::endl;
-    
+    ret = fcntl((int) fi->fh, cmd, fl);
+    if (ret < 0) {
+        in_flight--;
+        return -errno;
+    }
+
     in_flight--;
-    return 0;    
+    return 0;
 }
 
 int charybde_utimens(const char *path, const struct timespec tv[2])
