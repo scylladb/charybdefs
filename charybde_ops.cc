@@ -43,7 +43,7 @@ int charybde_getattr(const char *path, struct stat *buf)
         return ret;
     }
 
-    ret = stat(path, buf);
+    ret = lstat(path, buf);
     if (ret < 0) {
         in_flight--;
         return -errno;
