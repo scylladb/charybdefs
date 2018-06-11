@@ -68,7 +68,7 @@ int charybde_readlink(const char *path, char *buf, size_t bufsiz)
         in_flight--;
         return -errno;
     }
-
+    buf[ret] = 0; // should be null terminated according to FUSE readlink definition. See #11
     in_flight--;
     return 0;
 }
