@@ -18,9 +18,12 @@ make
 **Ubuntu 16.04**
 
 ```sh
-sudo apt-get install g++ cmake fuse libfuse-dev libthrift-dev python-thrift
+sudo apt-get install software-properties-common
+sudo add-apt-repository ppa:scylladb/ppa
+sudo apt-get update
+sudo apt-get install g++ cmake fuse libfuse-dev python-thrift thrift-compiler scylla-libthrift010-dev libboost-dev
 thrift -r --gen cpp --gen py server.thrift
-cmake CMakeLists.txt
+cmake -DCMAKE_PREFIX_PATH=/opt/scylladb CMakeLists.txt
 make
 ```
 
