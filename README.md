@@ -29,11 +29,24 @@ make
 
 Using
 =====
-
+Load fuse module, if it is not loaded
 ```sh
 modprobe fuse
-mkdir /root/scylla
-sudo ./charybdefs /var/lib/scylla/ -omodules=subdir,subdir=/root/scylla
+```
+Create mount directory for Charybde. Tested application should use this directory.
+
+Note: Faults can be applied for files that are manipulated through this directory only!
+```sh
+mkdir /mnt/charybdbde
+```
+`dest_dir` directory on the file system where actual files will be stored
+Running CharybdeFS
+```sh
+./charybdefs /mnt/charybdbde -omodules=subdir,subdir=/dest_dir
+```
+Running CharybdeFS and allowing other users to use the mount
+```sh
+./charybdefs /mnt/charybdbde -omodules=subdir,subdir=/dest_dir -oallow_other
 ```
 
 Example tests
