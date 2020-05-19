@@ -11,7 +11,7 @@ Building
 
 ```sh
 sudo yum install gcc-c++ cmake fuse fuse-devel thrift python-thrift thrift-devel
-thrift -r --gen cpp --gen py server.thriftz
+thrift -r --gen cpp --gen py server.thrift
 cmake CMakeLists.txt
 make
 ```
