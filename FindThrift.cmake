@@ -42,6 +42,7 @@ find_path(THRIFT_STATIC_LIB_PATH libthrift.a PATHS ${THRIFT_LIB_PATHS})
 
 # prefer the thrift version supplied in THRIFT_HOME
 find_library(THRIFT_LIB NAMES thrift HINTS ${THRIFT_LIB_PATHS})
+find_library(THRIFT_NB_LIB NAMES thriftnb HINTS ${THRIFT_LIB_PATHS})
 
 find_program(THRIFT_COMPILER thrift
   $ENV{THRIFT_HOME}/bin
@@ -52,7 +53,7 @@ find_program(THRIFT_COMPILER thrift
 
 if (THRIFT_LIB)
   set(THRIFT_FOUND TRUE)
-  set(THRIFT_LIBS ${THRIFT_LIB})
+  set(THRIFT_LIBS ${THRIFT_LIB} ${THRIFT_NB_LIB})
   set(THRIFT_STATIC_LIB ${THRIFT_STATIC_LIB_PATH}/libthrift.a)
   exec_program(${THRIFT_COMPILER}
     ARGS -version OUTPUT_VARIABLE THRIFT_VERSION RETURN_VALUE THRIFT_RETURN)

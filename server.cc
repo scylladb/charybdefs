@@ -39,7 +39,7 @@ using namespace ::apache::thrift::protocol;
 using namespace ::apache::thrift::transport;
 using namespace ::apache::thrift::server;
 
-using boost::shared_ptr;
+using std::shared_ptr;
 
 struct fault_descriptor {
     bool random;        // error code must be randomized
