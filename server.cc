@@ -252,16 +252,16 @@ void server_thread()
 {
     int port = 9090;
 
-	if(const char* envPort = std::getenv("CHARYBDEFS_PORT")) {
-		char *end;
-		const long envPortValue = strtol(envPort, &end, 10);
-		if (envPort == end) {
-			port = static_cast<int>(envPortValue);
-		} else {
-			std::cerr << "Invalid port : " << envPort <<
-			". Using the default value : " << port << std::endl;
-		}
-	}
+    if(const char* envPort = std::getenv("CHARYBDEFS_PORT")) {
+        char *end;
+        const long envPortValue = strtol(envPort, &end, 10);
+        if (envPort == end) {
+            port = static_cast<int>(envPortValue);
+        } else {
+            std::cerr << "Invalid port : " << envPort <<
+            ". Using the default value : " << port << std::endl;
+        }
+    }
 
     init_valid_methods();
 
