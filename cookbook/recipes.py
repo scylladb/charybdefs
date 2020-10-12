@@ -28,7 +28,7 @@ def usage():
 
 
 def connect():
-    envPort = os.getenv('CHARIBEFS_PORT', '')
+    envPort = os.getenv('CHARYBDEFS_PORT', '')
     port = int(envPort) if envPort else 9090
     transport = TSocket.TSocket('127.0.0.1', port)
     transport = TTransport.TBufferedTransport(transport)

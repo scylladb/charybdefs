@@ -252,7 +252,7 @@ void server_thread()
 {
     int port = 9090;
 
-	if(const char* envPort = std::getenv("CHARIBEFS_PORT")) {
+	if(const char* envPort = std::getenv("CHARYBDEFS_PORT")) {
 		char *end;
 		const long envPortValue = strtol(envPort, &end, 10);
 		if (envPort == end) {
