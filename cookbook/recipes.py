@@ -1,6 +1,7 @@
 import errno
 
 import sys
+import os
 
 sys.path.append('gen-py')
 from server import server
@@ -27,7 +28,9 @@ def usage():
 
 
 def connect():
-    transport = TSocket.TSocket('127.0.0.1', 9090)
+    envPort = os.getenv('CHARYBDEFS_PORT', '')
+    port = int(envPort) if envPort else 9090
+    transport = TSocket.TSocket('127.0.0.1', port)
     transport = TTransport.TBufferedTransport(transport)
     protocol = TBinaryProtocol.TBinaryProtocol(transport)
     client = server.Client(protocol)

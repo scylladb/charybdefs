@@ -252,6 +252,18 @@ void server_thread()
 {
     int port = 9090;
 
+    if(const char *envPort = std::getenv("CHARYBDEFS_PORT")) {
+        char *end;
+        errno = 0;
+        const long envPortValue = strtol(envPort, &end, 10);
+        if (envPort != end && errno == 0) {
+            port = static_cast<int>(envPortValue);
+        } else {
+            std::cerr << "Invalid port : " << envPort <<
+            ". Using the default value : " << port << std::endl;
+        }
+    }
+
     init_valid_methods();
 
     std::cout << "Server Thread started" << std::endl;
