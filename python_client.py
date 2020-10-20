@@ -19,8 +19,8 @@ try:
 
     print(client.get_methods())
 
-    # client.set_fault(['flush', 'fsync', 'fsyncdir'], False, 0, 100000, "", True, 500000)
-    client.set_fault(['flush', 'fsync', 'fsyncdir'], False, 0, 99000, "", True, 500000)
+    # client.set_fault(['flush', 'fsync', 'fsyncdir'], False, [], 100000, "", True, 500000)
+    client.set_fault(['flush', 'fsync', 'fsyncdir'], False, [], 99000, "", True, 500000)
     # client.clear_all_faults()
 
 except Thrift.TException as tx:
