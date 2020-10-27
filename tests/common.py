@@ -10,7 +10,9 @@ from thrift.transport import TSocket
 from thrift.transport import TTransport
 from thrift.protocol import TBinaryProtocol
 
-sys.path.append('gen-py')
+basedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+gen_py_dir = os.path.join(basedir, 'cookbook', 'gen-py')
+sys.path.append(gen_py_dir)
 from server import server
 from server.ttypes import *
 
@@ -31,7 +33,7 @@ def start_scylla(method, write):
     print("Starting scylla")
     log = open(build_log_filename(method, write), 'w')
     proc = subprocess.Popen(['/usr/bin/scylla',
-                             '-m', '512M',
+                             '--options-file', '/etc/scylla/scylla.yaml',
                              '--developer-mode=1'],
                             preexec_fn=os.setsid,
                             stdout=log, stderr=log)

@@ -1,9 +1,12 @@
 #!/usr/bin/python
 import sys
-sys.path.append('gen-py')
+import os
+basedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+gen_py_dir = os.path.join(basedir, 'cookbook', 'gen-py')
+sys.path.append(gen_py_dir)
 
-from gen.server import server
-from gen.server.ttypes import *
+from server import server
+from server.ttypes import *
 
 from thrift import Thrift
 from thrift.transport import TSocket

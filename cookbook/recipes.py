@@ -1,8 +1,12 @@
 import errno
 
 import sys
+import os
 
-sys.path.append('gen-py')
+basedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+gen_py_dir = os.path.join(basedir, 'cookbook', 'gen-py')
+sys.path.append(gen_py_dir)
+
 from server import server
 from server.ttypes import *
 

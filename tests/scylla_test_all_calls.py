@@ -1,11 +1,12 @@
-import sys
-sys.path.append('gen-py')
-
+#!/usr/bin/python
 import random
 import threading
-
-from gen.server.ttypes import *
-
+import sys
+import os
+basedir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+gen_py_dir = os.path.join(basedir, 'cookbook', 'gen-py')
+sys.path.append(gen_py_dir)
+from server.ttypes import *
 from common import *
 
 
@@ -62,6 +63,7 @@ def writer():
 
 
 def read_check(count):
+    global keep_going
     from cassandra.cluster import Cluster
     cluster = Cluster()
     session = cluster.connect()

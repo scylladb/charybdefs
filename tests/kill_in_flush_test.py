@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from subprocess import check_output
 import random
 
