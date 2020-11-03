@@ -1,5 +1,5 @@
 cmake_minimum_required (VERSION 2.8.11)
-project (CharibeFS)
+project (CharybdeFS)
 
 set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR})
 
