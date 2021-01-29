@@ -6,7 +6,7 @@
 
 service server {
 
-    // Used to get the list of availables systems calls
+    // Used to get the list of available system calls
     list<string> get_methods(), 
 
     // Used to clear all faults sources

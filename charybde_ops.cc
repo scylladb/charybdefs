@@ -10,6 +10,8 @@
  * **
  */
 
+#define FUSE_USE_VERSION 29
+
 #include "server.hh"
 
 #include <iostream>
@@ -20,7 +22,11 @@ extern "C" {
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#if defined(__APPLE__)
+#include <sys/mount.h>
+#else
 #include <sys/vfs.h>
+#endif
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -422,7 +428,11 @@ int charybde_fsync(const char *path, int datasync, struct fuse_file_info *fi)
     }
 
     if (datasync) {
+#if defined(__APPLE__)
+        ret = fcntl(fi->fh, F_FULLFSYNC);
+#else
         ret = fdatasync(fi->fh);
+#endif
         if (ret < 0) {
             in_flight--;
             return -errno;
@@ -439,8 +449,13 @@ int charybde_fsync(const char *path, int datasync, struct fuse_file_info *fi)
     return 0;
 }
 
+#if defined(__APPLE__)
+int charybde_setxattr(const char *path, const char *name,
+                      const char *value, size_t size, int flags, uint32_t position)
+#else
 int charybde_setxattr(const char *path, const char *name,
                      const char *value, size_t size, int flags)
+#endif
 {
     static volatile int in_flight = 0;
     in_flight++;
@@ -450,7 +465,11 @@ int charybde_setxattr(const char *path, const char *name,
         return ret;
     }
 
+#if defined(__APPLE__)
+    ret = setxattr(path, name, value, size, position, flags);
+#else
     ret = setxattr(path, name, value, size, flags);
+#endif
     if (ret < 0) {
         in_flight--;
         return -errno;
@@ -460,8 +479,13 @@ int charybde_setxattr(const char *path, const char *name,
     return 0;
 }
 
+#if defined(__APPLE__)
+int charybde_getxattr(const char *path, const char *name,
+                      char *value, size_t size, uint32_t position)
+#else
 int charybde_getxattr(const char *path, const char *name,
                      char *value, size_t size)
+#endif
 {
     static volatile int in_flight = 0;
     in_flight++;
@@ -471,7 +495,11 @@ int charybde_getxattr(const char *path, const char *name,
         return ret;
     }
 
+#if defined(__APPLE__)
+    ret = getxattr(path, name, value, size, position, XATTR_NOFOLLOW);
+#else
     ret = getxattr(path, name, value, size);
+#endif
     if (ret < 0) {
         in_flight--;
         return -errno;
@@ -492,7 +520,11 @@ int charybde_listxattr(const char *path, char *list,
         return ret;
     }
 
+#if defined(__APPLE__)
+    ret = listxattr(path, list, size, XATTR_NOFOLLOW);
+#else
     ret = listxattr(path, list, size);
+#endif
     if (ret < 0) {
         in_flight--;
         return -errno;
@@ -512,8 +544,11 @@ int charybde_removexattr(const char *path, const char *name)
         return ret;
     }
 
-
+#if defined(__APPLE__)
+    ret = removexattr(path, name, XATTR_NOFOLLOW);
+#else
     ret = removexattr(path, name);
+#endif
     if (ret < 0) {
         in_flight--;
         return -errno;
@@ -612,7 +647,11 @@ int charybde_fsyncdir(const char *path, int datasync, struct fuse_file_info *fi)
     }
 
     if (datasync) {
+#if defined(__APPLE__)
+        ret = fcntl(dirfd(dir), F_FULLFSYNC);
+#else
         ret = fdatasync(dirfd(dir));
+#endif
         if (ret < 0) {
             in_flight--;
             return -errno;
@@ -907,7 +946,19 @@ int charybde_fallocate(const char *path, int mode,
         return ret;
     }
 
+#if defined(__APPLE__)
+    fstore_t store = {F_ALLOCATECONTIG, F_PEOFPOSMODE, offset, len};
+    ret = fcntl((int) fi->fh, F_PREALLOCATE, &store);
+    if (ret == -1) {
+        store.fst_flags = F_ALLOCATEALL;
+        ret = fcntl((int) fi->fh, F_PREALLOCATE, &store);
+        if (ret != -1) {
+            ret = ftruncate((int) fi->fh, len);
+        }
+    }
+#else
     ret = fallocate((int) fi->fh, mode, offset, len);
+#endif
     if (ret < 0) {
         in_flight--;
         return -errno;

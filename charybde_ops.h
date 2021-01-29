@@ -39,8 +39,13 @@ int charybde_statfs(const char *, struct statvfs *);
 int charybde_flush(const char *, struct fuse_file_info *);
 int charybde_release(const char *, struct fuse_file_info *);
 int charybde_fsync(const char *, int, struct fuse_file_info *);
-int charybde_setxattr(const char *, const char *, const char *, size_t, int);
+#if defined(__APPLE__)
+int charybde_getxattr(const char *, const char *, char *, size_t, uint32_t);
+int charybde_setxattr(const char *, const char *, const char *, size_t, int, uint32_t);
+#else
 int charybde_getxattr(const char *, const char *, char *, size_t);
+int charybde_setxattr(const char *, const char *, const char *, size_t, int);
+#endif
 int charybde_listxattr(const char *, char *, size_t);
 int charybde_removexattr(const char *, const char *);
 int charybde_opendir(const char *, struct fuse_file_info *);
