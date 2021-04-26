@@ -4,4 +4,4 @@ if [ ! -d gen-py ]; then
     thrift -r --gen py ../server.thrift &> /dev/null
 fi
 
-python recipes.py $1
+python2 recipes.py $1
