@@ -7,7 +7,7 @@
 service server {
 
     // Used to get the list of availables systems calls
-    list<string> get_methods(), 
+    list<string> get_methods(),
 
     // Used to clear all faults sources
     void clear_all_faults(),
@@ -18,7 +18,7 @@ service server {
     // Set fault on a specific list of methods
     void set_fault(list<string> methods,    // the list of methods to operate on
                    bool random,             // Must we return random errno
-                   i32 err_no,              // A specific errno to return
+                   list<i32> err_nos,       // A list of specific errnos to select from
                    i32 probability,         // Fault probability over 100 000
                    string regexp,           // A regexp matching a victim file
                    bool kill_caller,        // Kill -9 the caller process
@@ -27,7 +27,7 @@ service server {
 
     // Works like set_fault but applies the fault to all methods
     void set_all_fault(bool random,
-                       i32 err_no,
+                       list<i32> err_nos,
                        i32 probability,
                        string regexp,
                        bool kill_caller,

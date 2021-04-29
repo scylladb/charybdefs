@@ -42,18 +42,27 @@ using namespace ::apache::thrift::server;
 using std::shared_ptr;
 
 struct fault_descriptor {
-    bool random;        // error code must be randomized
-    int err_no;         // error code to return
-    int32_t probability;    // 0 < probability < 100
-    std::string regexp; // regular expression on filename
-    bool kill_caller;   // Must we kill the caller
-    int32_t delay_us;       // operation delay in us
-    bool auto_delay;    // must auto delay like an SSD
+    bool random;                                // error code must be randomized
+    std::vector<int32_t>  err_nos;              // error code(s) to select from
+    int32_t probability;                        // 0 < probability < 100
+    std::string regexp;                         // regular expression on filename
+    bool kill_caller;                           // Must we kill the caller
+    int32_t delay_us;                           // operation delay in us
+    bool auto_delay;                            // must auto delay like an SSD
 };
 
+std::vector<int32_t> default_errnos;
 std::set<std::string> valid_methods;
 std::map<std::string, fault_descriptor> fault_map;
 std::mutex mutex;
+
+void init_default_errnos()
+{
+    int32_t errno;
+    for (errno = E2BIG; errno < EXFULL; errno++) {
+        default_errnos.push_back(errno);
+    }
+}
 
 void init_valid_methods()
 {
@@ -104,13 +113,16 @@ static bool is_valid_method(std::string method)
 }
 
 // return a random err_no
-static int random_err_no()
+static int random_err_no(std::vector<int32_t> err_nos)
 {
-    std::random_device rd;
-    std::uniform_int_distribution<int> dist(E2BIG, EXFULL);
+    if (err_nos.empty() == 0) {
+        err_nos = default_errnos;
+    }
 
-    return dist(rd);
-} 
+    std::random_device rd;
+    std::uniform_int_distribution<int> dist(0, err_nos.size());
+    return int(err_nos[dist(rd)]);
+}
 
 // return true if random number is not in the probability
 static bool get_lucky(int probability)
@@ -125,7 +137,7 @@ static bool get_lucky(int probability)
     if (dist(rd) > probability) {
         return true;
     }
-    
+
     return false;
 }
 
@@ -139,16 +151,13 @@ int error_inject(volatile int in_flight, std::string path, std::string method)
         return 0;
     }
 
-    // get the fault injection descritor
+    // get the fault injection descriptor
     auto descr = fault_map[method];
 
-    int err_no = 0;
-
     // get the err_no to inject
-    if (descr.err_no) {
-        err_no = descr.err_no;
-    } else if (descr.random) {
-        err_no = random_err_no();
+    int err_no = 0;
+    if (descr.random || !descr.err_nos.empty()) {
+        err_no = random_err_no(descr.err_nos);
     }
 
     if (descr.regexp.size()) {
@@ -208,14 +217,14 @@ class server_handler: public serverIf {
     }
 
     void set_fault(const std::vector<std::string>& methods, const bool random,
-                   const int32_t err_no, const int32_t probability,
+                   const std::vector<int32_t> & err_nos, const int32_t probability,
                    const std::string& regexp, const bool kill_caller,
                    int32_t delay_us, const bool auto_delay)
     {
         struct fault_descriptor descr;
 
         descr.random = random;
-        descr.err_no = err_no;
+        descr.err_nos = err_nos;
         descr.probability = probability;
         descr.regexp = regexp;
         descr.kill_caller = kill_caller;
@@ -230,7 +239,7 @@ class server_handler: public serverIf {
         }
     }
 
-    void set_all_fault(const bool random, const int32_t err_no,
+    void set_all_fault(const bool random, const std::vector<int32_t> & err_nos,
                        const int32_t probability, const std::string& regexp,
                        const bool kill_caller, const int32_t delay_us,
                        const bool auto_delay)
@@ -240,8 +249,8 @@ class server_handler: public serverIf {
         for (auto method: valid_methods) {
             methods.push_back(method);
         }
-        
-        set_fault(methods, random, err_no, probability,
+
+        set_fault(methods, random, err_nos, probability,
                   regexp, kill_caller, delay_us,
                   auto_delay);
     }
@@ -253,6 +262,7 @@ void server_thread()
     int port = 9090;
 
     init_valid_methods();
+    init_default_errnos();
 
     std::cout << "Server Thread started" << std::endl;
     try {
