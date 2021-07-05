@@ -17,7 +17,7 @@
 
 #include <string>
 
-int error_inject(volatile int in_flight, std::string path, std::string method);
+int error_inject(volatile int in_flight, std::string path, std::string method, void* buffer = nullptr, size_t buffer_len = 0);
 
 #endif
 

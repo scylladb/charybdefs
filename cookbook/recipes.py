@@ -22,7 +22,8 @@ def usage():
           " --specific-syscalls\n"
           " --probability\n"
           " --file-pattern\n"
-          " --broken-drive")
+          " --broken-drive\n"
+          " --silent-corruption")
     sys.exit(1)
 
 
@@ -73,6 +74,8 @@ def main():
     elif sys.argv[1] == "--broken-drive":
         print("The agonising drive simulator")
         client.set_all_fault(False, errno.EIO, 100, "", False, 100000, False)
+    elif sys.argv[1] == "--silent-corruption":
+        client.set_fault(['write_buf', 'write'], False, 0, 1000, "", False, 100, False, True)
     else:
         usage()
 
